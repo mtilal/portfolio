@@ -47,58 +47,62 @@ white down a narrow column. Headings, dates and short labels stay ragged.
 
 ---
 
-## Deploying it — Cloudflare Pages (free)
+## Where it is deployed
 
-Free permanently at this size: unlimited bandwidth, unlimited visitors, HTTPS,
-and roughly 300 edge locations, so a recruiter in London or Dubai is served
-from near them rather than from Pakistan.
+**Live: <https://portfolio.muhammadtilal.workers.dev>**
 
-**1 · Put the files on GitHub**
+- **Source:** <https://github.com/mtilal/portfolio> (branch `main`)
+- **Host:** Cloudflare Workers with static assets, named `portfolio`, connected
+  to the GitHub repo. Every push to `main` redeploys automatically in about
+  twenty seconds.
+- **Cost:** free, permanently. Cloudflare's free tier covers this many times
+  over, and the site is under 500 KB in total.
 
-Create a repository at <https://github.com/new> — name it `portfolio`, keep it
-**Public**, add nothing else. Then from this folder:
+The URL is `<worker-name>.<account-subdomain>.workers.dev`. Both halves are set
+in the Cloudflare dashboard: the worker name under the worker's own settings,
+the account subdomain under the account. Renaming the worker changes the URL
+immediately, and the old one stops resolving.
 
-```bash
-git init && git add . && git commit -m "Portfolio site"
-```
+`_headers` is honoured here exactly as it is on Pages — assets are cached at
+the edge for a year while the HTML always revalidates, so an edit is visible
+at once but repeat visitors re-download nothing.
 
-```bash
-git branch -M main && git remote add origin https://github.com/YOUR-USERNAME/portfolio.git && git push -u origin main
-```
+### Pointing a custom domain at it
 
-**2 · Connect Cloudflare Pages**
+A domain is the only part that costs money — roughly $11/year at any
+registrar; the hosting stays free. In the Cloudflare dashboard open the worker,
+then **Settings → Domains & Routes → Add → Custom domain**. HTTPS is issued
+automatically. The `workers.dev` URL keeps working alongside it, so anything
+already printed on a CV stays valid.
 
-1. Sign up free at <https://dash.cloudflare.com/sign-up> — no card required.
-2. **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-3. Authorise GitHub and pick the `portfolio` repository.
-4. Leave every build setting empty:
-   - Framework preset: **None**
-   - Build command: *(blank)*
-   - Build output directory: `/`
-5. **Save and Deploy.**
-
-A minute later it's live at `https://<project-name>.pages.dev`. You choose
-`<project-name>` in step 3 — take `muhammadtilal` if it's free.
-
-**3 · One edit after the first deploy**
-
-Replace `muhammadtilal.pages.dev` with your real address wherever it appears
-in `index.html` (the canonical link, the two `og:` tags, and the block at the
-bottom of the file). These only affect how the link previews on LinkedIn or
-WhatsApp and how Google lists you — the site itself works either way.
+Afterwards, update the seven places the site names its own address: the
+canonical link, the two `og:` tags and the JSON-LD block in `index.html`, plus
+`sitemap.xml` and `robots.txt`. Those only affect Google's listing and link
+previews on LinkedIn or WhatsApp; the site works either way.
 
 ---
 
 ## Changing anything, later
 
-Edit `index.html`, then:
+The easiest route needs no local setup at all: open `index.html` on GitHub,
+click the pencil, use Ctrl+F to find the sentence, retype it, and hit **Commit
+changes**. Cloudflare redeploys within about twenty seconds.
+
+To edit locally instead, change the file and run these — one per line, because
+Windows PowerShell does not accept `&&` as a separator:
 
 ```bash
-git add . && git commit -m "Describe the change" && git push
+git add .
+```
+```bash
+git commit -m "Describe the change"
+```
+```bash
+git push
 ```
 
-Cloudflare redeploys in about 20 seconds and keeps every previous version, so
-you can roll back from the dashboard at any time.
+Every deploy is kept, so you can roll back to any earlier version from the
+Cloudflare dashboard.
 
 **To update the CV:** replace `assets/CV-Muhammad-Tilal.pdf`, keeping the
 filename, and push. The download button keeps working, no code change.
@@ -140,19 +144,10 @@ No trackers, no third-party requests, no cookie banner.
 
 ---
 
-## If you'd rather use GitHub Pages
+## A free fallback host, if ever needed
 
-Simpler, slightly slower, also free and permanent. Do step 1, then in the
-repository go to **Settings → Pages**, set **Source** to *Deploy from a
-branch*, branch `main`, folder `/ (root)`, Save. It appears at
-`https://YOUR-USERNAME.github.io/portfolio/` within a couple of minutes.
-GitHub Pages ignores `_headers`; everything else behaves the same.
-
-Naming the repository `YOUR-USERNAME.github.io` instead gives you the shorter
-`https://YOUR-USERNAME.github.io/`, which reads better on a CV.
-
-## A custom domain, if you want one later
-
-Both hosts attach one free — you'd pay only the registrar for the name, about
-$10–15/year for something like `muhammadtilal.com`. Hosting stays free. Add it
-under **Custom domains** in the Cloudflare Pages project; HTTPS is automatic.
+Nothing about this site is tied to Cloudflare — it is plain static files. It
+will run unchanged on GitHub Pages (repository **Settings → Pages**, source
+*Deploy from a branch*, branch `main`, folder `/ (root)`), on Netlify, or on
+any static host. GitHub Pages ignores `_headers`, so you would lose the edge
+caching rules and the security headers; everything else behaves identically.

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://muhammadtilal.pages.dev/sitemap.xml
+Sitemap: https://portfolio.muhammadtilal.workers.dev/sitemap.xml
